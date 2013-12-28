@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InfoPanel xmlns="*"
+		   xmlns:mx="http://www.adobe.com/2006/mxml"
+		   width="488" height="80%" creationComplete="initPanel(event)" layout="horizontal"
+		   title="地图元件库">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.animengine.core.animation.BitmapAnimation;
+			import com.animengine.core.animation.WrapperedAnimation;
+			import com.animengine.define.ResType;
+			import com.animengine.net.loader.ImageModel;
+			import com.animengine.net.loader.StaticDataModel;
+			import com.mapeditor.events.MapEditorEvent;
+			import com.mapeditor.items.Building;
+			import com.table.SQL_enemy_config;
+			import com.ultizen.game.engine.table.TblManager;
+			
+			import mx.managers.PopUpManager;
+
+			private var _currentLibType:String;//库的模式 file:文件模式 res:swf资源模式
+			private var _itemId:int = 0;
+			private var _itemXml:XML;
+			private var dispAnm:BitmapAnimation = new BitmapAnimation();
+			private var _newImageLibPanel:NewImageLibPanel;//新建目录弹出窗口
+			[Bindable]
+			private var treeData:XML;
+			//初始化面板
+			private function initPanel(evet:Event):void{
+			}
+			
+			//弹出输入新建目录名称panel
+			private function newLib(evet:Event):void{
+				_newImageLibPanel = NewImageLibPanel(PopUpManager.createPopUp(this,NewImageLibPanel,true));
+				PopUpManager.centerPopUp(_newImageLibPanel);
+				_newImageLibPanel.addEventListener(MapEditorEvent.NEW_IMAGELIB_SUBMIT,createNewLib); 
+			}
+			
+			//新建目录
+			private function createNewLib(evet:MapEditorEvent):void{
+				_newImageLibPanel.removeEventListener(MapEditorEvent.NEW_IMAGELIB_SUBMIT,createNewLib);
+				var newLibName:String = evet.newName;
+				PopUpManager.removePopUp(_newImageLibPanel);
+			}
+			
+			//FileSystemTree 的 change 事件
+			private function fileTreeChange(event:Event):void
+			{
+				_itemXml = event.target.selectedItem;
+				trace("选择点击的id:"+int(_itemXml.@id));
+				if(_itemXml && int(_itemXml.@id) > 0)
+				{
+					var id:String = "302_1_1";
+					if(uint(_itemXml.@isnpc) == ResType.NPC)
+					{
+						id = "301_1_1";
+					}else if(uint(_itemXml.@isnpc) == ResType.MONSTER)
+					{
+						var sql:SQL_enemy_config = TblManager.Instance().GetTblItem(SQL_enemy_config, _itemXml.@id) as SQL_enemy_config;
+						if(sql.type == 1)
+						{
+							id = "302_1_1";
+						}else
+						{
+							id = "303_1_1";
+						}
+					}
+					_itemXml.@source = id;
+					ImageModel.instance.getAnimRes(id, function(frames : WrapperedAnimation) : void
+					{
+						if(null == dispAnm)
+							dispAnm = new BitmapAnimation();
+						StaticDataModel.instance.setOffset(id, frames.frames);
+						dispAnm.renderSpeed = frames.renderSpeed;
+						dispAnm.setFrames(frames.frames);
+						if(null == dispAnm.parent)
+							imgPrvImg.addChild(dispAnm);
+						//预览界面 需要重置位置
+//						dispAnm.flipH = false;
+						if(dispAnm.flipH)//预览图需要翻转 控制
+						{
+							dispAnm.gotoAndStop(1);
+							dispAnm.x = (dispAnm.currentFramData.offsetX+dispAnm.currentFramData.offsetX);
+							dispAnm.y = -(dispAnm.currentFramData.offsetY-dispAnm.currentFramData.offsetY);
+						}else{
+							dispAnm.x = 0;
+							dispAnm.y = 0;
+						}
+						setBrushBitmapData();
+					}
+					);
+				}
+			}
+			
+			//设置主界面画笔图像
+			private function setBrushBitmapData():void{
+				var buildBrush:Building = this.parentApplication._buildBrush;
+				if (buildBrush == null)
+					buildBrush = new Building(-1);
+				buildBrush.type = _itemXml.@isnpc;
+				buildBrush.tId = _itemXml.@id;
+				trace("选择点击的Tid:"+int(buildBrush.tId));
+				buildBrush.source = _itemXml.@source;
+				
+				buildBrush.reset(dispAnm);
+				buildBrush._dispAnm.gotoAndStop(1);
+				this.parentApplication._buildBrush = buildBrush;
+			}
+			public function initTreeData(config:XML):void
+			{
+//				treeData = <config/>;
+//				var temxml:XMLList = config.children();
+//				var npc:XML = <npc id={"NPC"}/>;
+//				var monster:XML = <npc id={"怪物"}/>;
+//				for(var i:int=0;i<temxml.length();i++)
+//				{
+//					var node:XML = temxml[i];
+//					if(uint(node.@isnpc) == ResType.NPC)
+//					{
+//						npc.appendChild(node.copy());
+//					}else if(uint(node.@isnpc) == ResType.MONSTER)
+//					{
+//						monster.appendChild(node.copy());
+//					}
+//				}
+//				treeData.appendChild(npc);
+//				treeData.appendChild(monster);
+				//update
+				treeData = config;
+				anmLib.dataProvider = config;
+			}
+		]]>
+	</mx:Script>
+	<mx:UIComponent id="imgPrvImg" width="226" height="392" x="80" y="31" mouseEnabled="false" mouseChildren="false"/>
+	<mx:Tree id="anmLib" x="0" y="96" width="234" height="395" change="fileTreeChange(event)"
+			 dataProvider="{treeData}" labelField="@label" showRoot="false"/>
+	<!--<mx:Button id="btn_newLib" x="10" y="343" label="新建目录" click="{newLib(event)}"/>-->
+	<!--<mx:Button id="btn_edit" x="166" y="343" label="编辑" click="editBuild(event)"/>-->
+	
+</InfoPanel>

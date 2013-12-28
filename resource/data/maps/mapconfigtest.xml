@@ -1,0 +1,14 @@
+<config>
+  <map name="test" width="2500" height="600" cellWidth="30" cellHeight="30" row="83" col="20" type="1" sectionNumber="3" eachWidth="1000,1000,500" source="2001_hfz2_2.png">
+    <monster>
+      <node id="20001" type="302" x="422" y="347" index="3" source="303_1_1"/>
+    </monster>
+    <monster>
+      <node id="20001" type="302" x="1203" y="377" index="1" source="303_1_1"/>
+    </monster>
+    <monster>
+      <node id="20001" type="302" x="2228" y="555" index="2" source="303_1_1"/>
+    </monster>
+    <npc/>
+  </map>
+</config>

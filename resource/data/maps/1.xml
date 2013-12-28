@@ -1,0 +1,13 @@
+<config>
+  <map name="1" width="2500" height="660" cellWidth="30" cellHeight="30" row="83" col="22" type="0" sectionNumber="1" eachWidth="" source="2001_hfz2_2.png">
+    <npc/>
+    <monster>
+      <node id="0" type="302" x="812" y="497" index="1" source="302_1_1"/>
+      <node id="1" type="302" x="920" y="450" index="2" source="302_1_1"/>
+      <node id="2" type="302" x="908" y="567" index="3" source="302_1_1"/>
+      <node id="3" type="302" x="1025" y="409" index="4" source="302_1_1"/>
+      <node id="4" type="302" x="1025" y="587" index="5" source="302_1_1"/>
+      <node id="5" type="302" x="1318" y="498" index="6" source="303_1_1"/>
+    </monster>
+  </map>
+</config>

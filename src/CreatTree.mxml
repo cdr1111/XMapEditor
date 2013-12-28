@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" initialize="init(event)"
+			 width="440" height="260" 
+		 verticalCenter="-33">
+	<mx:Script>
+		<![CDATA[
+			import com.animengine.define.ResType;
+			
+			import flashx.textLayout.conversion.TextConverter;
+			
+			import mx.events.FlexEvent;
+			
+			private var file:File=new File();
+			private var fs:FileStream=new FileStream();
+			private var path:String="";
+//			private var tops:Array=[];
+			private var runtimes:Array=[];
+			private var index:uint=0;
+			private var xml:XML=null;
+			private var handle:uint=0;
+			private var activation:Boolean=false;
+			private var reNameFiles:String;
+			public static const COUNT:uint=5000;
+			/**
+			 * 初始化
+			 **/
+			protected function init(event:FlexEvent):void
+			{
+				browse.addEventListener(MouseEvent.CLICK,BrowseOnClick);
+				file.addEventListener(Event.SELECT,OnSelect);
+				ftitle.text =  File.applicationDirectory.nativePath +  "/../resource/";
+				file.nativePath = File.applicationDirectory.nativePath  +  "/../resource/";
+				path=file.nativePath;
+				ftitle.text=file.nativePath;
+			}
+			/**
+			 * 浏览目录
+			 **/
+			private function BrowseOnClick(e:MouseEvent):void
+			{
+				file.browseForDirectory("资源目录");
+			}
+			/**
+			 * 选择目录
+			 **/
+			private function OnSelect(e:Event):void
+			{
+				text.text="";
+				ftitle.text=file.nativePath;
+				path=file.nativePath;
+				text.htmlText="<font color='#FF0000'>准备就绪.</font>";
+			}
+			/**
+			 * 查找文件 
+			 **/
+			private function DoFind(f:File):void
+			{
+				var flist:Array=null;
+				var temp:Array=[];
+				var i:int=0;
+				if(f.name==".svn" 
+					|| f.name == "images"
+					|| f.name == "data") return;//地图暂时没有另做处理
+				if(f.isDirectory){
+					flist=f.getDirectoryListing();
+					if(!activation){
+						activation=true;
+						for(i=0;i<flist.length;i++)
+						{
+							if(flist[i].isDirectory 
+								/*  && (flist[i].name=="monster_rs" || flist[i].name=="npc_rs") */)
+							{
+								temp.push(flist[i]);
+							}
+						}
+						flist.splice(0);
+						flist=temp;
+					}
+					for(i=0;i<flist.length;i++)
+					{
+						if(flist[i].isDirectory)
+						{
+							DoFind(flist[i]);
+						}else
+						{
+//							if(flist[i].nativePath.indexOf("runtime")!=-1)
+//							{
+							runtimes.push(flist[i]);
+//							}
+						}
+						if(index==COUNT){
+							text.htmlText="<font color='#FF0000'>文件数超出限制当前上限为:"+COUNT+"</font>";
+							return;
+						}
+						index++;
+					}
+				}
+			}
+			/**
+			 * 创建xml文件
+			 **/
+			private function DoCreate(e:MouseEvent):void
+			{
+				xml=<root>
+					</root>;
+				runtimes.splice(0);
+				index=0;
+				text.text="";
+				DoFind(file);
+				activation=true;
+				reNameFiles = "";
+				
+				handle=setInterval(traverse,1);
+			}
+			private function creatLookXml():void
+			{
+				var f:File=null;
+				f=new File(path + "/config.xml");
+				fs.openAsync(f, FileMode.WRITE);
+				fs.writeUTFBytes(xml);
+				fs.close();
+				//赋值给 tree
+				MapEditor.main.initTreeData(xml);
+				
+				activation = false;
+				closeHandler();
+			}
+			private function traverse():void
+			{
+				var i:int=0;
+				var node:XML=null;
+				var name:String="";
+				var type:String="";
+				var resType:String = "";
+				var fpath:String="";
+				var isNpc:uint = 0;
+				var p:int=0;
+				var f:File=null;
+				
+				if(runtimes.length == 0){
+					clearInterval(handle);
+					//生成可看文件
+					creatLookXml();
+					
+					if( reNameFiles.length == 0 )
+					{
+						text.htmlText = "<font color='#FF0000'>导出config.xml成功共</font><font color='0x0080FF'>"+
+							index+"</font><font color='FF0000'>个文件</font>";
+					}
+					return;
+				}
+				if(runtimes.length>0 && f==null){
+					f=runtimes.shift();
+				}
+				p=f.name.lastIndexOf(".");
+				if(p!=-1){
+					name=f.name.slice(0,p);
+					resType=f.name.slice(p+1).toLocaleLowerCase();
+					fpath=f.nativePath.replace(path,"");
+					trace(fpath);
+					var str:String = "";
+					var arr:Array = fpath.split('\\');
+					for(var n:int =0; n<arr.length; n++)
+					{
+						str += arr[n];
+						if(n != arr.length-1)
+							str += "/";
+					}
+					isNpc = fpath.indexOf("npc_rs") != -1 ? ResType.NPC : fpath.indexOf("monster_rs") != -1 ? ResType.MONSTER : 0;
+					fpath = str;
+					//拼id 名字  用后3个字段 拼接
+					if(isNpc != 0)
+						name = getId(arr);
+					if(keyArr[2] != "1" && isNpc != 0) return;//只需 要 站立动作就可以了
+					switch(resType){
+						case "gbin":
+							resType="gbin";
+							break;
+						case "txt":
+							resType="txt";
+							break;
+						case "swf":
+							resType="swf";
+							break;
+						case "xml":
+							resType="xml";
+							break;
+						case "png":
+						case "jpg":
+							resType="gimg";
+							break;
+						default :
+							return;
+					}
+					node=<node id={name} type={keyArr[2]} path={fpath} isnpc={isNpc} restype={resType}/>;
+					
+					//插入
+//					var key:String = keyArr[0]+"_"+keyArr[1];
+//					var tmpXml:XMLList = xml[key];
+//					var keyNode:XML = tmpXml[0];
+//					if(0 == tmpXml.length())
+//					{
+//						keyNode = new XML("<"+key+"></"+key+">");
+//						xml.appendChild(keyNode);
+//					}
+//					keyNode.@label = key;
+//					keyNode.appendChild(node);
+					xml.appendChild(node);
+					text.text=fpath;
+				}
+			}
+			private var keyArr:Array;
+			private function getId(arr:Array):String
+			{
+				keyArr = [];
+				var str:String = "";
+				for(var l:int = arr.length-3; l<arr.length; l++)
+				{
+					if(l != arr.length-1)
+					{
+						keyArr.push(arr[l]);
+						str += arr[l];
+						str += "_";
+					}else
+					{
+						var tmpStr:String = arr[l];
+						var strArr:Array = tmpStr.split(".");
+						str += strArr[0];
+						
+						keyArr.push(strArr[0]);
+					}
+				}
+				return str;
+			}
+			
+			protected function closeHandler():void
+			{
+				this.visible = false;
+			}
+			
+		]]>
+	</mx:Script>
+		<mx:TextInput left="11" top="6" right="197" enabled="false" id="ftitle"/>
+		<mx:Button id="browse" label="浏览" right="120" top="8"/>
+		<mx:TextArea top="62" right="10" bottom="10" left="10" id="text"/>
+		<mx:Button label="生成" right="38" top="8" click="DoCreate(event);" id="submit"/>
+</mx:Panel>

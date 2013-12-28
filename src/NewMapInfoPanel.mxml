@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" 
+ layout="absolute" width="400" height="476" title="地图基本信息"
+	creationComplete="initForm(event)" color="0x000000"
+	removedEffect="{removeEffect}" creationCompleteEffect="{showEffect}"
+	>
+	<!-- 创建地图时显示的面板 -->
+	<mx:Script>
+		<![CDATA[
+			import com.mapeditor.events.MapEditorEvent;
+			import com.mapeditor.utils.MapEditorConstant;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			private var _file:File;
+            private const _mapImageFilter:FileFilter = new FileFilter("*.png;*.jpg;*.swf","*.png;*.jpg;*.swf");//文件定义
+            
+			[Bindable]
+			private var loadTypeList:ArrayCollection = new ArrayCollection();
+			
+			private function initForm(evet:Event):void{
+				_file = File.applicationDirectory;
+				_file.nativePath = MapEditorConstant.MAP_IMAGE_PATH;
+				selectFile.addEventListener(MouseEvent.CLICK,selectFileHandler);
+				submitForm.addEventListener(MouseEvent.CLICK,submitHandler);
+				cancelBtn.addEventListener(MouseEvent.CLICK,cancelHandler);
+				loadTypeList.addItem({label:"主城模式",data:"0"});
+				loadTypeList.addItem({label:"副本模式",data:"1"});
+				loadTypeChange();
+				mapName.setFocus();
+			}
+			
+			private function selectFileHandler(evet:Event):void{
+				_file.browseForOpen("选择图片文件",[_mapImageFilter]);
+                _file.addEventListener(Event.SELECT,fileSelectHanlder);
+                _file.addEventListener(Event.COMPLETE,fileCompleteHanlder);
+                _file.addEventListener(ProgressEvent.PROGRESS,fileProgressHanlder);
+			}
+			
+			private function fileSelectHanlder(evet:Event):void{
+				mapFilePath.text = _file.nativePath;
+			}
+			private function fileCompleteHanlder(evet:Event):void{
+				
+			}
+			private function fileProgressHanlder(evet:Event):void{
+				
+			}
+			
+			private function submitHandler(evet:Event):void{
+				if(mapName.text == null || mapName.text == "" || mapWidth.text == null || mapWidth.text == ""
+				|| mapHeight.text == null || mapHeight.text == "" || cellWidth.text == null || cellWidth.text == ""
+				|| cellHeight.text == null || cellHeight.text == "" || mapFilePath.text == null || mapFilePath.text == "")
+				{
+					Alert.show("请将信息填写完整！");
+				}else{
+					var mapEvent:MapEditorEvent = new MapEditorEvent(MapEditorEvent.NEWMAPINFO_SUBMIT);
+					mapEvent.mapName = mapName.text;
+				
+					mapEvent.mapWidth    = int(mapWidth.text);
+					mapEvent.mapHeight   = int(mapHeight.text);
+					mapEvent.cellWidth   = int(cellWidth.text);
+					mapEvent.cellHeight  = int(cellHeight.text);
+					mapEvent.loadType    = String(loadType.value);
+					mapEvent.sectionNumber  = int(partitionNumber.text);
+					mapEvent.eachWidth  = eachWidth.text;
+					mapEvent.mapImageFilePath = mapFilePath.text;
+					
+//						var libHome:File = MapEditorConstant.COMPONENT_LIB_HOME;
+					var original:File = new File(mapFilePath.text);
+					mapEvent.mapSource = original.name;
+//						var newFile:File = File.documentsDirectory.resolvePath(MapEditorConstant.MAP_PATH + MapEditorConstant.MAP_PATH + mapEvent.mapName + '/' + original.name); 
+//						original.copyTo(newFile, true);
+					dispatchEvent(mapEvent);
+					PopUpManager.removePopUp(this);
+				}
+			}
+			
+			private function loadTypeChange():void{
+				var flag:String = loadType.selectedItem.data;
+				partitionNumber.enabled  = flag != "0";
+				eachWidth.enabled  = flag != "0";
+			}
+			private function cancelHandler(evet:Event):void{
+				selectFile.removeEventListener(MouseEvent.CLICK,selectFileHandler);
+				submitForm.removeEventListener(MouseEvent.CLICK,submitHandler);
+				cancelBtn.removeEventListener(MouseEvent.CLICK,cancelHandler);
+				PopUpManager.removePopUp(this);
+			}
+			
+			public function closeForm():void{
+				selectFile.removeEventListener(MouseEvent.CLICK,selectFileHandler);
+				submitForm.removeEventListener(MouseEvent.CLICK,submitHandler);
+				cancelBtn.removeEventListener(MouseEvent.CLICK,cancelHandler);
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function changePartitionNumber(event:Event):void
+			{
+			}
+			
+			protected function changeEachWidth(event:Event):void
+			{
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Fade alphaFrom="1" alphaTo="0" duration="1000" id="removeEffect" />
+	<mx:Fade alphaFrom="0" alphaTo="1" duration="1000" id="showEffect" />
+	<mx:Rotate duration="1500" id="imageShow" />
+	
+	<mx:Label x="33" y="29" text="地图名称："/>
+	<mx:Label x="33" y="64" text="地图宽度："/>
+	<mx:Label x="162.5" y="64" text="地图高度：" width="65"/>
+	<mx:Label x="33" y="100" text="单元格宽度："/>
+	<mx:Label x="162.5" y="100" text="单元格高度："/>
+	<mx:Label x="33" y="178" text="编辑模式："/>
+	<mx:Label x="33" y="142" text="地图文件："/>
+	<mx:TextInput x="96" y="27" width="188" id="mapName" text="test"/>
+	<mx:TextInput x="96" y="62" width="58.5" id="mapWidth" text="2500"/>
+	<mx:TextInput x="225.5" y="62" width="58.5" id="mapHeight" text="600"/>
+	<mx:TextInput x="96" y="98" width="58.5" id="cellWidth" text="30"/>
+	<mx:TextInput x="225.5" y="98" width="58.5" id="cellHeight" text="30"/>
+	<mx:TextInput x="96" y="140" width="188" id="mapFilePath" enabled="false"/>
+	
+	<mx:Button id="selectFile" x="292" y="140" label="选择"/>
+	<mx:Button id="submitForm" x="96" y="404" label="确定"/>
+	<mx:Button id="cancelBtn" x="208" y="404" label="取消"/>
+	<mx:ComboBox id="loadType" x="96" y="176" dataProvider="{loadTypeList}" change="{loadTypeChange()}"></mx:ComboBox>
+	<mx:Label x="33" y="208" text="副本段数："/>
+	<mx:Label x="34.5" y="245" text="每段宽度："/>
+	<mx:TextInput id="partitionNumber"  x="92"  y="206" width="62.5" change="changePartitionNumber(event)" restrict="[0-9]" maxChars="2" text="3"/>
+	<mx:TextInput id="eachWidth" x="89.5" y="241" width="250.5" change="changeEachWidth(event)"
+				   restrict="[0-9,]"/>
+	
+</mx:Panel>

@@ -1,0 +1,18 @@
+<config>
+  <map name="20010101" width="1800" height="600" cellWidth="30" cellHeight="30" row="60" col="20" type="1" sectionNumber="2" eachWidth="1500,300" source="xyc.jpg">
+    <monster>
+      <node id="20001" type="302" x="985" y="404" index="0" source="303_1_1"/>
+      <node id="10081" type="302" x="626" y="397" index="4" source="302_1_1"/>
+      <node id="10081" type="302" x="736" y="351" index="5" source="302_1_1"/>
+      <node id="10081" type="302" x="740" y="442" index="6" source="302_1_1"/>
+      <node id="10081" type="302" x="753" y="525" index="7" source="302_1_1"/>
+      <node id="10081" type="302" x="806" y="561" index="8" source="302_1_1"/>
+      <node id="10081" type="302" x="885" y="555" index="9" source="302_1_1"/>
+    </monster>
+    <monster>
+      <node id="20001" type="302" x="1574" y="492" index="1" source="303_1_1"/>
+      <node id="20001" type="302" x="1716" y="512" index="2" source="303_1_1"/>
+    </monster>
+    <npc/>
+  </map>
+</config>

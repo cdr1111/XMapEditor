@@ -1,0 +1,45 @@
+<config>
+  <map name="test" width="2500" height="660" cellWidth="30" cellHeight="30" row="83" col="22" type="1" sectionNumber="3" eachWidth="833,833,833" source="2001_hfz2_2.png">
+    <npc/>
+    <monster>
+      <node id="12" type="302" x="244" y="358" index="1" source="302_1_1"/>
+      <node id="13" type="302" x="377" y="357" index="2" source="302_1_1"/>
+      <node id="14" type="302" x="525" y="359" index="3" source="302_1_1"/>
+      <node id="15" type="302" x="669" y="360" index="4" source="302_1_1"/>
+      <node id="16" type="302" x="806" y="361" index="5" source="302_1_1"/>
+      <node id="17" type="302" x="948" y="360" index="6" source="302_1_1"/>
+      <node id="18" type="302" x="1102" y="362" index="7" source="302_1_1"/>
+      <node id="19" type="302" x="188" y="457" index="8" source="302_1_1"/>
+      <node id="20" type="302" x="305" y="462" index="9" source="302_1_1"/>
+      <node id="21" type="302" x="443" y="463" index="10" source="302_1_1"/>
+      <node id="22" type="302" x="582" y="462" index="11" source="302_1_1"/>
+      <node id="23" type="302" x="722" y="464" index="12" source="302_1_1"/>
+      <node id="24" type="302" x="855" y="471" index="13" source="302_1_1"/>
+      <node id="25" type="302" x="1007" y="472" index="14" source="302_1_1"/>
+      <node id="26" type="302" x="135" y="555" index="15" source="302_1_1"/>
+      <node id="27" type="302" x="249" y="553" index="16" source="302_1_1"/>
+      <node id="28" type="302" x="378" y="556" index="17" source="302_1_1"/>
+      <node id="29" type="302" x="523" y="559" index="18" source="302_1_1"/>
+      <node id="30" type="302" x="661" y="557" index="19" source="302_1_1"/>
+      <node id="31" type="302" x="800" y="563" index="20" source="302_1_1"/>
+      <node id="32" type="302" x="946" y="565" index="21" source="302_1_1"/>
+      <node id="33" type="302" x="1174" y="475" index="22" source="302_1_1"/>
+      <node id="34" type="302" x="1309" y="482" index="23" source="302_1_1"/>
+      <node id="35" type="302" x="1460" y="479" index="24" source="302_1_1"/>
+      <node id="36" type="302" x="1100" y="571" index="25" source="302_1_1"/>
+      <node id="37" type="302" x="1251" y="572" index="26" source="302_1_1"/>
+      <node id="38" type="302" x="1396" y="573" index="27" source="302_1_1"/>
+      <node id="39" type="302" x="1544" y="568" index="28" source="302_1_1"/>
+      <node id="40" type="302" x="189" y="633" index="29" source="302_1_1"/>
+      <node id="41" type="302" x="320" y="634" index="30" source="302_1_1"/>
+      <node id="42" type="302" x="458" y="631" index="31" source="302_1_1"/>
+      <node id="43" type="302" x="593" y="631" index="32" source="302_1_1"/>
+      <node id="44" type="302" x="737" y="628" index="33" source="302_1_1"/>
+      <node id="45" type="302" x="881" y="628" index="34" source="302_1_1"/>
+      <node id="46" type="302" x="1028" y="630" index="35" source="302_1_1"/>
+      <node id="47" type="302" x="1190" y="634" index="36" source="302_1_1"/>
+      <node id="48" type="302" x="1335" y="635" index="37" source="302_1_1"/>
+      <node id="49" type="302" x="1481" y="635" index="38" source="302_1_1"/>
+    </monster>
+  </map>
+</config>

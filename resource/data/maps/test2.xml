@@ -1,0 +1,6 @@
+<config>
+  <map name="test2" width="2500" height="660" cellWidth="30" cellHeight="30" row="83" col="22" type="1" sectionNumber="3" eachWidth="833,833,833" source="xyc.jpg">
+    <npc/>
+    <monster/>
+  </map>
+</config>

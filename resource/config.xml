@@ -1,0 +1,7 @@
+<root>
+  <node id="302_1_1" type="1" path="/monster_rs/302/1/1.swf" isnpc="302" restype="swf"/>
+  <node id="303_1_1" type="1" path="/monster_rs/303/1/1.swf" isnpc="302" restype="swf"/>
+  <node id="301_1_1" type="1" path="/npc_rs/301/1/1.swf" isnpc="306" restype="swf"/>
+  <node id="AnimationOffset" type="7" path="/other/AnimationOffset.xml" isnpc="0" restype="xml"/>
+  <node id="sql" type="7" path="/other/sql.pak" isnpc="0" restype="gbin"/>
+</root>
